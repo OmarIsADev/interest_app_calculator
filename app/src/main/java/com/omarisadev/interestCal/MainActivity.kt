@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,27 +82,9 @@ fun Form() {
 
         Text("Duration")
         val monthsDuration = input("Months")
-        val yearsDuration = input("Years")
+        val yearsDuration = input("Years", true)
 
         val compound = optionList()
-
-//        ExposedDropdownMenuBox(
-//            expanded = false,
-//            onExpandedChange = {}
-//        ) {
-//            OutlinedTextField(
-//                label = { Text("Rate duration") },
-//                value = duration,
-//                onValueChange = { duration = it }
-//            )
-//        }
-//
-//        Button(
-//            onClick = { },
-//            modifier = Modifier.fillMaxWidth(),
-//        ) {
-//            Text(stringResource(R.string.calc), textAlign = TextAlign.Center, maxLines = 1)
-//        }
 
         HorizontalDivider()
 
@@ -116,24 +99,28 @@ fun Form() {
 }
 
 @Composable
-fun input(label: String): Double {
+fun input(label: String, lastInput: Boolean = false): Double {
     var value by remember { mutableStateOf("") }
 
     OutlinedTextField(
         label = { Text(label) },
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            imeAction = if (lastInput) {
+                ImeAction.Done
+            } else {
+                ImeAction.Next
+            },
         ),
+        maxLines = 1,
         value = value,
         onValueChange = { value = it },
         modifier = Modifier.fillMaxWidth()
     )
 
-    return if (value == "") {
-        0.0
-    } else {
-        value.toDouble()
-    }
+    val finalVal: Double? = value.toDoubleOrNull()
+
+    return finalVal ?: 0.0
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
